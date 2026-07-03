@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReportStatus {
+  pending
+  in_progress
+  resolved
+}
+
+enum MessageType {
+  email
+  sms
+  call
+}
+
+enum MessageStatus {
+  pending
+  sent
+  failed
+  delivered
+}
+
+model AdminUser {
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  passwordHash        String
+  name                String?
+  role                String               @default("staff")
+  isActive            Boolean              @default(true)
+  mustChangePassword  Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  assignedReports     Report[]             @relation("AssignedReports")
+  auditLogs           AuditLog[]
+  reportNotes         ReportNote[]
+  reportAssignments   ReportAssignment[]   @relation("AssignedAdmin")
+  createdAssignments  ReportAssignment[]   @relation("AssignedByAdmin")
+  emailLogs           EmailLog[]
+  communicationLogs   CommunicationLog[]
+}
+
+model Report {
+  id                String               @id @default(cuid())
+  claimCode         String               @unique
+  abuseType         String
+  otherAbuseType    String?
+  description       String
+  location          String
+  incidentDate      DateTime?
+  contactPreference String
+  contactValue      String?
+  anonymous         Boolean              @default(false)
+  reporterEmail     String?
+  reporterPhone     String?
+  status            ReportStatus         @default(pending)
+  priority          String               @default("medium")
+  escalationStatus  String               @default("none")
+  isCritical        Boolean              @default(false)
+  isArchived        Boolean              @default(false)
+  assignedStaffId   String?
+  assignedStaff     AdminUser?           @relation("AssignedReports", fields: [assignedStaffId], references: [id])
+  notes             String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  auditLogs         AuditLog[]
+  reportNotes       ReportNote[]
+  reportAssignments ReportAssignment[]
+  communicationLogs CommunicationLog[]
+  emailLogs         EmailLog[]
+}
+
+model ReportNote {
+  id        String    @id @default(cuid())
+  reportId  String
+  report    Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    AdminUser? @relation(fields: [authorId], references: [id])
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ReportAssignment {
+  id            String    @id @default(cuid())
+  reportId      String
+  report        Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  adminId       String
+  admin         AdminUser @relation("AssignedAdmin", fields: [adminId], references: [id])
+  assignedById  String?
+  assignedBy    AdminUser? @relation("AssignedByAdmin", fields: [assignedById], references: [id])
+  assignedAt    DateTime  @default(now())
+  notes         String?
+}
+
+model AuditLog {
+  id          String    @id @default(cuid())
+  action      String
+  target      String?
+  targetType  String?
+  details     String?
+  result      String    @default("success")
+  ipAddress   String?
+  browser     String?
+  createdAt   DateTime  @default(now())
+  adminId     String?
+  admin       AdminUser? @relation(fields: [adminId], references: [id])
+  reportId    String?
+  report      Report?   @relation(fields: [reportId], references: [id])
+}
+
+model SupportResource {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  phone           String?
+  alternativePhone String?
+  email           String?
+  website         String?
+  address         String?
+  googleMapsLink  String?
+  category        String?
+  availability    String?
+  workingDays     String?
+  workingHours    String?
+  priority        String?  @default("medium")
+  status          String?  @default("active")
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model EmailLog {
+  id        String    @id @default(cuid())
+  reportId  String?
+  report    Report?   @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  adminId   String?
+  admin     AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  recipient String
+  sender    String?
+  subject   String
+  message   String?
+  status    String    @default("sent")
+  error     String?
+  sentAt    DateTime  @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model CommunicationLog {
+  id          String         @id @default(cuid())
+  reportId    String?
+  report      Report?        @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  adminId     String?
+  admin       AdminUser?     @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  type        MessageType
+  recipient   String?
+  status      MessageStatus  @default(pending)
+  details     String?
+  createdAt   DateTime       @default(now())
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  expiresAt   DateTime
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
+  createdAt   DateTime  @default(now())
+}
+
+model PasswordResetToken {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  expiresAt   DateTime
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id])
+  createdAt   DateTime  @default(now())
+}
