@@ -29,7 +29,9 @@ app.use(generalLimiter);
 app.get('/health', (_req, res) => {
   res.json({ success: true, message: 'Safe City Hawassa backend is running' });
 });
-
+app.get("/api", (req, res) => {
+  res.json({ message: "API is working" });
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/claims', claimRoutes);
