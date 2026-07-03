@@ -17,8 +17,12 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.frontendUrl, credentials: true }));
-app.use(morgan('dev'));
+app.use(
+  cors({
+    origin: "https://safecity-frontend-ftle.vercel.app",
+    credentials: true,
+  })
+);app.use(morgan('dev'));
 app.use(express.json());
 app.use(generalLimiter);
 
