@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { getResources } from '../services/api';
 import type { ResourceItem } from '../types';
+import { LoaderCircle } from 'lucide-react';
 
 const sectionMeta: Record<string, { title: string; description: string; icon: string }> = {
   emergency_hotline: { title: 'Emergency Hotlines', description: 'Immediate assistance hotlines', icon: '??' },
@@ -14,10 +15,23 @@ const sectionMeta: Record<string, { title: string; description: string; icon: st
 export function EmergencyContactsPage() {
   const { language } = useLanguage();
   const [resources, setResources] = useState<ResourceItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getResources().then((response) => setResources(response.resources || [])).catch(() => setResources([]));
-  }, []);
+  setLoading(true);
+
+  getResources()
+    .then((response) => {
+      setResources(response.resources || []);
+    })
+    .catch(() => {
+      setResources([]);
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+
+}, []);
 
   const grouped = useMemo(() => {
     return resources.reduce<Record<string, ResourceItem[]>>((acc, resource) => {
@@ -32,8 +46,22 @@ export function EmergencyContactsPage() {
     <div className="space-y-6">
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <h1 className="text-3xl font-semibold">{language === 'en' ? 'Emergency contacts' : '???? ??????'}</h1>
-        <p className="mt-3 text-sm text-slate-600">{language === 'en' ? 'Current support contacts sourced from the backend.' : '???? ?? ???? ???? ???????'}</p>
-      </div>
+{loading ? (
+  <div className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+    <LoaderCircle className="animate-spin" size={18} />
+    <span>
+      {language === 'en'
+        ? 'Loading emergency contacts...'
+        : '???? ?????? ?????...'}
+    </span>
+  </div>
+) : (
+  <p className="mt-3 text-sm text-slate-600">
+    {language === 'en'
+      ? 'Current support contacts sourced from the backend.'
+      : '???? ?? ???? ???? ???????'}
+  </p>
+)}      </div>
 
       <div className="space-y-6">
         {Object.entries(grouped).map(([key, items]) => {

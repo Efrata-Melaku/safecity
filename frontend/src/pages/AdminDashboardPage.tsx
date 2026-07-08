@@ -222,86 +222,396 @@ export function AdminDashboardPage() {
           </div>
 
           {selectedReport ? (
-            <div className="space-y-4 rounded-3xl border border-slate-200 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <div className="text-xl font-semibold">{selectedReport.claimCode}</div>
-                  <div className="text-sm text-slate-500">{language === 'en' ? 'Report details' : '????? ????'}</div>
-                </div>
-                <div className="space-x-2 text-sm">
-                  <button type="button" onClick={() => void handleArchive()} className="rounded-full border border-slate-200 px-3 py-2">{language === 'en' ? 'Archive' : '?????'}</button>
-                  <button type="button" onClick={() => void handleRestore()} className="rounded-full border border-slate-200 px-3 py-2">{language === 'en' ? 'Restore' : '??? ????? ????'}</button>
-                </div>
-              </div>
-              <div className="grid gap-3">
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">{language === 'en' ? 'Description' : '????'}</div>
-                  <div className="mt-2 text-sm text-slate-700">{selectedReport.description}</div>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-slate-50 p-4">
-                    <div className="text-sm text-slate-500">{language === 'en' ? 'Status' : '???'}</div>
-                    <div className="mt-2">{selectedReport.status}</div>
-                  </div>
-                  <div className="rounded-2xl bg-slate-50 p-4">
-                    <div className="text-sm text-slate-500">{language === 'en' ? 'Priority' : '????'}</div>
-                    <div className="mt-2">{selectedReport.priority}</div>
-                  </div>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <select value={selectedReport.status} onChange={handleStatusChange} className="rounded-2xl border border-slate-200 px-3 py-2">
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In progress</option>
-                    <option value="resolved">Resolved</option>
-                  </select>
-                  <select value={selectedReport.priority || 'medium'} onChange={handlePriorityChange} className="rounded-2xl border border-slate-200 px-3 py-2">
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">{language === 'en' ? 'Assigned to' : '?? ?? ????'}</div>
-                  <select value={selectedReport.assignedStaff?.id || ''} onChange={handleAssign} className="mt-2 w-full rounded-2xl border border-slate-200 px-3 py-2">
-                    <option value="">{language === 'en' ? 'Unassigned' : '??????'}</option>
-                    {staff.map((member) => (
-                      <option key={member.id} value={member.id}>{member.name || member.email}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-500">{language === 'en' ? 'Actions' : '??????'}</div>
-                    <div className="flex gap-2">
-                      <button type="button" onClick={() => void handleCall()} className="rounded-full border border-slate-200 px-3 py-2 text-sm">Call</button>
-                      <button type="button" onClick={() => void handleSms()} className="rounded-full border border-slate-200 px-3 py-2 text-sm">SMS</button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          if (!selectedReport) return;
-                          await sendReportEmail(selectedReport.id, {
-                            recipient: emailDraft.recipient,
-                            subject: emailDraft.subject || `Update on report ${selectedReport.claimCode}`,
-                            message: emailDraft.message || 'Following up on your report.',
-                            sender: 'admin@safehawassa.org',
-                          });
-                          await refreshSelectedReport();
-                        }}
-                        className="rounded-full border border-slate-200 px-3 py-2 text-sm"
-                      >
-                        Email
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 p-4">
-                  <div className="text-sm text-slate-500">{language === 'en' ? 'Notes' : '???????'}</div>
-                  <textarea value={noteValue} onChange={(event) => setNoteValue(event.target.value)} className="mt-2 h-24 w-full rounded-2xl border border-slate-200 px-3 py-2" placeholder={language === 'en' ? 'Add a note' : '????? ??????'} />
-                  <button type="button" onClick={() => void handleAddNote()} className="mt-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">{language === 'en' ? 'Save note' : '????? ?????'}</button>
-                </div>
-              </div>
-            </div>
-          ) : (
+  <div className="space-y-4 rounded-3xl border border-slate-200 p-4">
+
+    {/* Header */}
+    <div className="flex items-center justify-between gap-3">
+      <div>
+        <div className="text-xl font-semibold">
+          {selectedReport.claimCode}
+        </div>
+        <div className="text-sm text-slate-500">
+          {language === 'en'
+            ? 'Complete report details'
+            : '????? ????'}
+        </div>
+      </div>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => void handleArchive()}
+          className="rounded-full border px-3 py-2 text-sm"
+        >
+          Archive
+        </button>
+
+        <button
+          type="button"
+          onClick={() => void handleRestore()}
+          className="rounded-full border px-3 py-2 text-sm"
+        >
+          Restore
+        </button>
+      </div>
+    </div>
+
+
+    {/* Main Report Information */}
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold text-lg">
+        Report Information
+      </h3>
+
+
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Claim Code
+          </p>
+          <p>{selectedReport.claimCode}</p>
+        </div>
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Abuse Type
+          </p>
+          <p>{selectedReport.abuseType}</p>
+        </div>
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Location
+          </p>
+          <p>{selectedReport.location}</p>
+        </div>
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Incident Date
+          </p>
+
+          <p>
+            {
+              selectedReport.incidentDate
+              ? new Date(
+                selectedReport.incidentDate
+              ).toLocaleDateString()
+              : "Not provided"
+            }
+          </p>
+
+        </div>
+
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Priority
+          </p>
+          <p>{selectedReport.priority}</p>
+        </div>
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Status
+          </p>
+          <p>{selectedReport.status}</p>
+        </div>
+
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Contact Preference
+          </p>
+          <p>
+            {selectedReport.contactPreference}
+          </p>
+        </div>
+
+
+        <div>
+          <p className="text-sm text-slate-500">
+            Anonymous
+          </p>
+
+          <p>
+            {selectedReport.anonymous
+              ? "Yes"
+              : "No"}
+          </p>
+
+        </div>
+
+
+      </div>
+
+
+      <div className="mt-4">
+
+        <p className="text-sm text-slate-500">
+          Description
+        </p>
+
+        <p className="mt-2 text-sm">
+          {selectedReport.description}
+        </p>
+
+      </div>
+
+
+    </div>
+
+
+
+
+    {/* Reporter Contact */}
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold text-lg">
+        Reporter Contact
+      </h3>
+
+
+      <div className="mt-3 space-y-2">
+
+        <p>
+          Email:
+          {" "}
+          {selectedReport.reporterEmail || "Not provided"}
+        </p>
+
+
+        <p>
+          Phone:
+          {" "}
+          {selectedReport.reporterPhone || "Not provided"}
+        </p>
+
+
+        <p>
+          Contact:
+          {" "}
+          {selectedReport.contactValue || "Not provided"}
+        </p>
+
+
+      </div>
+
+
+    </div>
+
+
+
+
+    {/* Assignment */}
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold">
+        Assigned Staff
+      </h3>
+
+
+      <select
+        value={
+          selectedReport.assignedStaff?.id || ''
+        }
+        onChange={handleAssign}
+        className="mt-3 w-full rounded-2xl border px-3 py-2"
+      >
+
+        <option value="">
+          Unassigned
+        </option>
+
+
+        {staff.map(member=>(
+          <option
+            key={member.id}
+            value={member.id}
+          >
+            {member.name || member.email}
+          </option>
+        ))}
+
+
+      </select>
+
+
+    </div>
+
+
+
+
+
+    {/* Actions */}
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold">
+        Actions
+      </h3>
+
+
+      <div className="mt-3 flex flex-wrap gap-2">
+
+
+        <button
+          onClick={() => void handleCall()}
+          className="rounded-full border px-4 py-2"
+        >
+          Call
+        </button>
+
+
+        <button
+          onClick={() => void handleSms()}
+          className="rounded-full border px-4 py-2"
+        >
+          SMS
+        </button>
+
+
+
+        <button
+          onClick={async()=>{
+
+          await sendReportEmail(
+            selectedReport.id,
+            {
+              recipient:
+                emailDraft.recipient,
+
+              subject:
+                emailDraft.subject,
+
+              message:
+                emailDraft.message,
+
+              sender:
+                "admin@safehawassa.org"
+            }
+          );
+
+          await refreshSelectedReport();
+
+          }}
+          className="rounded-full border px-4 py-2"
+        >
+          Email
+        </button>
+
+
+      </div>
+
+    </div>
+
+
+
+
+
+    {/* Notes */}
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold">
+        Notes
+      </h3>
+
+
+      <textarea
+        value={noteValue}
+        onChange={(e)=>
+          setNoteValue(e.target.value)
+        }
+        className="mt-3 h-24 w-full rounded-2xl border p-3"
+        placeholder="Add internal note..."
+      />
+
+
+      <button
+        onClick={() => void handleAddNote()}
+        className="mt-3 rounded-full bg-emerald-600 px-4 py-2 text-white"
+      >
+        Save Note
+      </button>
+
+
+
+      <div className="mt-4 space-y-3">
+
+      {selectedReport.reportNotes?.map(note=>(
+        <div
+          key={note.id}
+          className="border-b pb-2"
+        >
+
+          <p>
+            {note.content}
+          </p>
+
+          <small className="text-slate-500">
+            {note.author?.email}
+          </small>
+
+
+        </div>
+      ))}
+
+
+      </div>
+
+
+    </div>
+
+
+
+
+
+    {/* Communication History */}
+
+    <div className="rounded-2xl bg-slate-50 p-4">
+
+      <h3 className="font-semibold">
+        Communication History
+      </h3>
+
+
+      <div className="mt-3 space-y-2">
+
+
+      {selectedReport.communicationLogs?.map(log=>(
+
+        <div
+          key={log.id}
+          className="text-sm"
+        >
+
+          {log.type}
+          {" - "}
+          {log.recipient}
+
+        </div>
+
+      ))}
+
+
+
+      </div>
+
+
+    </div>
+
+
+
+  </div>
+)  : (
             <div className="rounded-3xl border border-dashed border-slate-300 p-8 text-center text-slate-500">{language === 'en' ? 'Select a report to view details.' : '?????? ???? ???? ?????'}</div>
           )}
         </div>
