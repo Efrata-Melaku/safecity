@@ -19,6 +19,10 @@ export function HomePage() {
             <Link to="/how-it-works" className="rounded-full border border-slate-600 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
               {t('learnMore')}
             </Link>
+             <Link to="/emergency-contacts" className="rounded-full border border-slate-600 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
+              {t('contact')}
+            </Link>
+
           </div>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-800/70 p-6">

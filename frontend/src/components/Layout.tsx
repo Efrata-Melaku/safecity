@@ -105,13 +105,7 @@ export function Layout({ children, coverMode, lowBandwidth, onToggleCover, onTog
         {t("claimStatus")}
       </NavLink>
 
-      <NavLink
-        to="/admin-resources"
-        className={linkClasses}
-        onClick={() => setMobileMenuOpen(false)}
-      >
-        Resources
-      </NavLink>
+     
 
       <button
         onClick={() => {
