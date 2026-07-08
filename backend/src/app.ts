@@ -19,7 +19,7 @@ const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: "https://safecity-frontend-chi.vercel.app/",
+    origin: "https://safecity-frontend-chi.vercel.app",
     credentials: true,
   })
 );app.use(morgan('dev'));
