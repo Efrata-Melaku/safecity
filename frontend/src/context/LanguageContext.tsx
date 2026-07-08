@@ -21,7 +21,7 @@ const translations = {
     toggleLanguage: 'Switch to Amharic',
     pageTitle: 'Safe reporting for every resident',
     heroText: 'Report abuse safely, privately, and with support.',
-    openReport: 'Open Report Wizard',
+    openReport: ' submit Report ',
     learnMore: 'Learn More',
     submitReport: 'Submit Report',
     claimCode: 'Claim code',

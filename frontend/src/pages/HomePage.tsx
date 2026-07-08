@@ -20,7 +20,7 @@ export function HomePage() {
               {t('learnMore')}
             </Link>
              <Link to="/emergency-contacts" className="rounded-full border border-slate-600 px-6 py-3 font-semibold text-white transition hover:bg-slate-800">
-              {t('contact')}
+              {t('contacts')}
             </Link>
 
           </div>
