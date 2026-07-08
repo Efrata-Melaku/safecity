@@ -39,7 +39,7 @@ export function Layout({ children, coverMode, lowBandwidth, onToggleCover, onTog
             <NavLink to="/emergency-contacts" className={linkClasses}>{t('contacts')}</NavLink>
             <NavLink to="/report" className={linkClasses}>{t('report')}</NavLink>
             <NavLink to="/claim-status" className={linkClasses}>{t('claimStatus')}</NavLink>
-              <NavLink to="/admin-resources" className={linkClasses}>Resources</NavLink>
+              {/* <NavLink to="/admin-resources" className={linkClasses}>Resources</NavLink> */}
             <button type="button" onClick={() => navigate('/admin-login')} className="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white">
               {t('adminLogin')}
             </button>

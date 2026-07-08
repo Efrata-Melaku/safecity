@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { Search } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { Link } from "react-router-dom";
+
+
 import {
   addReportNote,
   archiveReport,
@@ -154,7 +157,14 @@ export function AdminDashboardPage() {
         <h1 className="text-3xl font-semibold">{language === 'en' ? 'Admin dashboard' : '??????? ?????'}</h1>
         <p className="mt-3 text-sm text-slate-600">{language === 'en' ? 'Monitor reports, resources, and accountability actions.' : '??????? ????? ?? ??????? ??????? ??????'}</p>
       </div>
-
+<div className="flex gap-3">
+  <Link
+    to="/admin-resources"
+    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"
+  >
+    Manage Resources
+  </Link>
+</div>
       <div className="grid gap-4 md:grid-cols-4">
         {stats ? (
           [
