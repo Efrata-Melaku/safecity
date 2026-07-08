@@ -55,9 +55,16 @@ export function EmergencyContactsPage() {
                         <div className="font-semibold">{resource.name}</div>
                         <div className="mt-1 text-sm text-slate-600">{resource.description}</div>
                       </div>
-                      <div className="text-right text-sm text-emerald-700">
-                        {resource.phone ? <div>{resource.phone}</div> : <div className="text-slate-500">No phone</div>}
-                      </div>
+                 {resource.phone ? (
+  <a
+    href={`tel:${resource.phone}`}
+    className="inline-flex items-center rounded-lg bg-red-600 px-3 py-2 text-white hover:bg-red-700"
+  >
+    📞 Call {resource.phone}
+  </a>
+) : (
+  <div className="text-slate-500">No phone</div>
+)}
                     </div>
                     {resource.email ? <div className="mt-2 text-sm text-slate-600">{resource.email}</div> : null}
                     {resource.address ? <div className="mt-1 text-sm text-slate-600">{resource.address}</div> : null}

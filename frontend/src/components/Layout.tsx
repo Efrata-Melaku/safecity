@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { ShieldCheck, Menu } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { EmergencyExitButton } from './EmergencyExitButton';
@@ -15,6 +16,7 @@ interface LayoutProps {
 export function Layout({ children, coverMode, lowBandwidth, onToggleCover, onToggleBandwidth, onEmergencyExit }: LayoutProps) {
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const linkClasses = ({ isActive }: { isActive: boolean }) =>
     `rounded-md px-3 py-2 text-sm font-medium ${isActive ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-200'}`;
@@ -46,11 +48,84 @@ export function Layout({ children, coverMode, lowBandwidth, onToggleCover, onTog
             <button type="button" onClick={() => setLanguage(language === 'en' ? 'am' : 'en')} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
               {t('toggleLanguage')}
             </button>
-            <button type="button" className="rounded-md border border-slate-300 p-2 md:hidden">
+            <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="rounded-md border border-slate-300 p-2 md:hidden">
               <Menu size={18} />
             </button>
           </div>
         </div>
+         {mobileMenuOpen && (
+  <nav className="border-t border-slate-200 bg-white md:hidden">
+    <div className="flex flex-col p-4 space-y-2">
+
+      <NavLink
+        to="/"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("home")}
+      </NavLink>
+
+      <NavLink
+        to="/about"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("about")}
+      </NavLink>
+
+      <NavLink
+        to="/how-it-works"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("howItWorks")}
+      </NavLink>
+
+      <NavLink
+        to="/emergency-contacts"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("contacts")}
+      </NavLink>
+
+      <NavLink
+        to="/report"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("report")}
+      </NavLink>
+
+      <NavLink
+        to="/claim-status"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        {t("claimStatus")}
+      </NavLink>
+
+      <NavLink
+        to="/admin-resources"
+        className={linkClasses}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        Resources
+      </NavLink>
+
+      <button
+        onClick={() => {
+          setMobileMenuOpen(false);
+          navigate("/admin-login");
+        }}
+        className="rounded-md bg-emerald-600 px-3 py-2 text-white"
+      >
+        {t("adminLogin")}
+      </button>
+
+    </div>
+  </nav>
+)}
       </header>
 
       <main className={`mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 ${lowBandwidth ? 'motion-reduce:transition-none' : ''}`}>
