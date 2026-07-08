@@ -372,11 +372,13 @@ export function AdminDashboardPage() {
 
 
 <div className="grid gap-3 sm:grid-cols-2">
+  <p>Change Status</p>
                   <select value={selectedReport.status} onChange={handleStatusChange} className="rounded-2xl border border-slate-200 px-3 py-2">
                     <option value="pending">Pending</option>
                     <option value="in_progress">In progress</option>
                     <option value="resolved">Resolved</option>
                   </select>
+                  <p>Change Priority</p>
                   <select value={selectedReport.priority || 'medium'} onChange={handlePriorityChange} className="rounded-2xl border border-slate-200 px-3 py-2">
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
